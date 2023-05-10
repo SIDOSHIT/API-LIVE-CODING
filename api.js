@@ -42,14 +42,19 @@ export function addTodo({ text, token }) {
   });
 }
 
-export function login({ login, password }) {
+export function loginUser({ login, password }) {
   return fetch("https://webdev-hw-api.vercel.app/api/user/login", {
     method: "POST",
     body: JSON.stringify({
       login,
       password,
-    })
+    }),
   }).then((response) => {
+    if (response.status === 400) {
+        throw new Error("Неверный логин или пароль")
+    }
     return response.json();
+  }).catch(error => {
+    alert(error.message)
   });
-}   
+}
