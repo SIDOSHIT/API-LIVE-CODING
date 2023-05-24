@@ -5,6 +5,8 @@
 
 import { addTodo, deleteTodo, getTodos } from "./api.js";
 import { renderLoginComponent } from "./components/login-component.js";
+import { formatDateToRu, formatDateToUs } from "./lib/formatDate/formatDate.js";
+import { format } from "date-fns";
 
 // TODO: Получать из хранилища данных
 let tasks = [];
@@ -25,21 +27,30 @@ const fetchTodosAndRender = () => {
 const renderApp = () => {
   const appEl = document.getElementById("app");
   if (!token) {
-    renderLoginComponent({appEl, setToken: (newtoken) => {
-        token  = newtoken;
-    }, fetchTodosAndRender});
+    renderLoginComponent({
+      appEl,
+      setToken: (newtoken) => {
+        token = newtoken;
+      },
+      fetchTodosAndRender,
+    });
 
     return;
   }
 
+  const country = "ru";
   const tasksHtml = tasks
     .map((task) => {
+      const createDate = format(new Date(task.created_at), "dd/MM/yyyy hh:mm");
       return `
           <li class="task">
             <p class="task-text">
-              ${task.text} (Создал ${task.user?.name ?? 'Неизвестно'})
-              <button data-id="${task.id}" class="button delete-button">Удалить</button>
+              ${task.text} (Создал ${task.user?.name ?? "Неизвестно"})
+              <button data-id="${
+                task.id
+              }" class="button delete-button">Удалить</button>
             </p>
+            <p><i>Задача создана: ${createDate}</i></p>
           </li>`;
     })
     .join("");
